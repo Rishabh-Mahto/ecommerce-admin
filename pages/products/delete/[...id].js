@@ -11,7 +11,7 @@ export default function DeleteProductPage() {
         if (!id) {
             return;
         }
-        axios.get('api/products?id=' + id).then(response => {
+        axios.get('/api/products?id=' + id).then(response => {
             setProductInfo(response.data);
         })
     }, [id])
@@ -19,7 +19,7 @@ export default function DeleteProductPage() {
         router.push('/products');
     }
     async function deleteProduct() {
-        await axios.delete('api/products?id=' + id);
+        await axios.delete('/api/products?id=' + id);
         goBack();
     }
     return (

@@ -145,7 +145,7 @@ function Categories({swal}) {
                             <button 
                                 onClick={() => removeProperty(index)}
                                 type = 'button'
-                                className="btn-default">
+                                className="btn-red">
                                 Remove
                             </button>
                         </div>
@@ -154,14 +154,14 @@ function Categories({swal}) {
                 <div className="flex gap-1">
                 {editedCategory && (
                     <button
-                        type="button"
+                        type='button'
                         onClick={() => {
                             setEditedCategory(null);
                             setName('');
                             setParentCategory('');
                             setProperties([]);
                         }} 
-                        className="btn-default">Cancel
+                        className="btn-default m-3 mx-0">Cancel
                     </button>
                 )}
                     <button type="submit" 
@@ -187,10 +187,10 @@ function Categories({swal}) {
                                 <td>
                                     <button 
                                     onClick= {() => editCategory(category)} 
-                                    className = "btn-primary mr-1">Edit</button>
+                                    className = "btn-default mr-1">Edit</button>
                                     <button 
                                     onClick={() => deleteCategory(category)}
-                                    className = "btn-primary">Delete</button>
+                                    className = "btn-red">Delete</button>
                                 </td>
                             </tr>
                         ))}

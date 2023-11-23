@@ -11,28 +11,42 @@ export default function ProductForm({
     price:existingPrice, 
     images: existingImages,
     category: assignedCategory,
-    properties: assignedProperties,
+    subCategory: assignedSubCategory,
+    discount: assignedDiscount,
+    languages: assignedLanguages,
+    count: assignedCount,
 }) {
     const [title, setTitle] = useState(existingTitle || '');
     const [summary, setSummary] = useState(existingSummary || '');
-    const [category, setCategory] = useState(assignedCategory ||'');
-    const [productProperties, setProductProperties] = useState(assignedProperties || {});
     const [price, setPrice] = useState(existingPrice || '');
     const [images, setImages] = useState(existingImages || []);
     const [goToProducts, setGoToProducts] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const [categories, setCategories] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState(
+      assignedCategory || []
+    );
+    const [selectedSubCategories, setSelectedSubCategories] = useState(
+      assignedSubCategory || []
+    );
+    const [languages, setLanguages] = useState(assignedLanguages || []);
+    const [discount, setDiscount] = useState(assignedDiscount || '');
+    const [count, setCount] = useState(assignedCount || '');
+    const categories = ['Horror', 'Mystery', 'Crime', 'Romance', 'Thriller', 'Suspense', 'Fantasy', 'Mythology', 'Self help', 'Buisness', 'StartUp', 'Investing', 'Trading', 'Parenting', 'Poems', 'Geo political', 'Kids books', 'Autobiography', 'Health', 'Mental' ];
+    const subCategories = ['Rent', 'Buy'];
     const router = useRouter();
-    useEffect(() => {
-      axios.get('/api/categories').then(result => {
-        setCategories(result.data);
-      })
-    }, []);
+    
     async function saveProduct(ev) {
       ev.preventDefault();
       const data = {
-        title, summary, price, images, category, 
-        properties: productProperties
+        title,
+        summary, 
+        price, 
+        images, 
+        category: selectedCategories, 
+        subCategory: selectedSubCategories, 
+        languages, 
+        discount, 
+        count,
       };
       if (_id) {
         //update
@@ -64,61 +78,50 @@ export default function ProductForm({
     function updateImageOrder(images) {
       setImages(images);
     }
-    function setProductProp(propName, value) {
-      setProductProperties(prev => {
-        const newProductProps = {...prev};
-        newProductProps[propName] = value;
-        return newProductProps;
-      })
-    }
 
-  const propertiesToFill = [];
-  if (categories.length > 0 && category) {
-    let catInfo = categories.find(({ _id }) => _id === category);
-  if (catInfo && catInfo.properties) {
-    propertiesToFill.push(...catInfo.properties);
+    function handleCatChange(event) {
+      const selectedOptions = [...event.target.options]
+      .filter(option => option.selected)
+      .map(option => option.value);
+      setSelectedCategories(selectedOptions);
+   };
+
+   function handleSubCatChange(event) {
+    const selectedOptions = [...event.target.options]
+      .filter(option => option.selected)
+      .map(option => option.value);
+    setSelectedSubCategories(selectedOptions);
   }
-  while (catInfo?.parent?._id) {
-    const parentCat = categories.find(({ _id }) => _id === catInfo?.parent?._id);
-    if (parentCat && parentCat.properties) {
-      propertiesToFill.push(...parentCat.properties);
-    }
-    catInfo = parentCat;
-  }
-}
 
     return (
-        <form onSubmit={ saveProduct }>
+      <form onSubmit={ saveProduct }>
         <label>Product Name</label>
         <b><input 
           type="text" 
           placeholder="product name" 
           value={title} 
           onChange={ev => setTitle(ev.target.value)}/></b>
-        <label>Category</label>
-        <select value={category}
-                onChange={ev => setCategory(ev.target.value)}>
-          <option value="">Uncategorized</option>
-          {categories.length > 0 && categories.map(c => (
-            <option value={c._id}>{c.name}</option>
-          ))}
-        </select>
-        {propertiesToFill.length > 0 && propertiesToFill.map(p => (
-          <div className="">
-            <div>{p.name[0].toUpperCase()+p.name.substring(1)}</div>
-            <div>
-              <select value = {productProperties[p.name]}
-                  onChange={ev => 
-                    setProductProp(p.name, ev.target.value)
-                  }>
-                  {p.values.map(v => (
-                    <options value={v}>{v}</options>
-                  ))}
-              </select>
-            </div>
-            
-          </div>
+
+          <label>Category</label>
+          <select multiple value={selectedCategories} onChange={handleCatChange}>
+            {categories.map((category, index) => (
+              <option key={index} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+          
+
+        <label>Sub Category</label>
+        <select multiple value={selectedSubCategories} onChange={handleSubCatChange}>
+          {subCategories.map((subCategory, index) => (
+            <option key={index} value={subCategory}>
+              {subCategory}
+            </option>
         ))}
+        </select>
+
+
         <label>
           Photos
         </label>
@@ -148,8 +151,15 @@ export default function ProductForm({
             <input type="file" onChange={uploadImages} className="hidden"/>
           </label>
         </div>
+        
+        <label>Language</label>
+        <input 
+          type="text"
+          placeholder="languages"
+          value={languages} 
+          onChange={ev => setLanguages(ev.target.value)}/>
         <label>About</label>
-        <textarea 
+        <input 
           placeholder="Book Summary"
           value={summary} 
           onChange={ev => setSummary(ev.target.value)}/>
@@ -159,11 +169,23 @@ export default function ProductForm({
           placeholder="price"
           value={price}
           onChange={ev => setPrice(ev.target.value)}/>
+        <label>Discount</label>
+        <input 
+          type="number" 
+          placeholder="discount"
+          value={discount}
+          onChange={ev => setDiscount(ev.target.value)}/>
+        <label>Count</label>
+        <input 
+          type="number" 
+          placeholder="count"
+          value={count}
+          onChange={ev => setCount(ev.target.value)}/>
         <button 
           type="submit"
           className="btn-primary">
           Save
         </button>
-        </form>
+      </form>
     )
 }

@@ -6,11 +6,18 @@ import { useState } from "react";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     axios.get("/api/products").then((response) => {
       setProducts(response.data);
     });
   }, []);
+
+  const filteredProducts = products.filter((product) =>
+    product.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Layout>
       <Link className="btn-primary" href={"/products/new"}>
@@ -20,11 +27,17 @@ export default function Products() {
         <thead>
           <tr>
             <td>Product name</td>
-            <td></td>
+            <td>
+              <input
+                placeholder="Search Product"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </td>
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <tr key={product._id}>
               <td>{product.title}</td>
               <td>

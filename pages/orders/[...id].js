@@ -15,14 +15,13 @@ export default function OrderPage() {
   const getAllDetails = async (id) => {
     const orderData = await axios.get("/api/orders?id=" + id);
     setOrderInfo(orderData.data);
-    console.log(orderData.data);
     const userData = await axios.get("/api/users", {
       params: {
         email: orderData.data.userEmail,
       },
     });
+    console.log(orderData);
     setUserInfo(userData.data);
-    console.log(userData.data);
     for (const product of orderData.data.productId) {
       const productData = await axios.get("/api/products?id=" + product);
       setProductsInfo((prev) => [...prev, productData.data]);
@@ -52,11 +51,6 @@ export default function OrderPage() {
 
         <p>{userInfo?.name}</p>
         <p>{userInfo?.phone}</p>
-        <div>
-          {productsInfo?.map((product) => (
-            <p key={product._id}>{product.title}</p>
-          ))}
-        </div>
       </div>
     </Layout>
   );

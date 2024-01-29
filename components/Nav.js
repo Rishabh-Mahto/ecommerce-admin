@@ -11,6 +11,11 @@ export default function Nav({ show }) {
   const router = useRouter();
   const { pathname } = router;
 
+  async function logout() {
+    await router.push("/");
+    await signOut();
+  }
+
   return (
     <aside
       className={
@@ -107,7 +112,7 @@ export default function Nav({ show }) {
           </svg>
           Settings
         </Link>
-        <button className={inactivelink}>
+        <button className={inactivelink} onClick={logout}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

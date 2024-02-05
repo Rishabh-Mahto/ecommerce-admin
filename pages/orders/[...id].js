@@ -57,7 +57,7 @@ export default function OrderPage() {
         <hr />
         <div>
           {productsInfo?.map((product) => (
-            <p>
+            <p key={product._id}>
               {product?.title} - ₹{product?.price}
             </p>
           ))}

@@ -1,11 +1,28 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import Nav from "@/components/Nav";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Logo from "./Logo";
+import { isAdminRequest } from "@/pages/api/auth/[...nextauth]";
+import { useRouter } from "next/router";
 
 export default function Layout({ children }) {
   const [showNav, setShowNav] = useState(false);
   const { data: session } = useSession();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (session) {
+        const isAdmin = await isAdminRequest(session?.user?.email);
+        if (!isAdmin) {
+          router.replace("/logout"); //check this
+        }
+      }
+    };
+
+    checkAdmin();
+  }, [session, router]);
 
   if (!session) {
     return (

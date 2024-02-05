@@ -5,7 +5,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { getServerSession } from "next-auth";
 import { getSession } from "next-auth/react";
 
-const adminEmail = "itsrishabh13@gmail.com";
+const adminEmail = ["itsrishabh13@gmail.com", "readonrent.in@gmail.com"];
 
 export const authOptions = {
   providers: [
@@ -22,14 +22,14 @@ export const authOptions = {
           const foundUser = await User.findOne({ email: profile.email });
 
           if (foundUser) {
-            if (foundUser.email === adminEmail) {
+            if (adminEmail.includes(foundUser.email)) {
               foundUser.isAdmin = true;
               await foundUser.save();
             } else {
               throw new Error("Not an admin");
             }
           } else {
-            if (profile.email !== adminEmail) {
+            if (!adminEmail.includes(profile.email)) {
               throw new Error("Not an admin");
             }
           }
@@ -53,7 +53,7 @@ export default NextAuth(authOptions);
 export async function isAdminRequest(context) {
   const session = await getSession(context);
 
-  if (!session?.user?.email || session.user.email !== adminEmail) {
+  if (!session?.user?.email || !adminEmail.includes(session.user.email)) {
     return false;
   }
 

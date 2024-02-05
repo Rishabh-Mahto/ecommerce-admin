@@ -20,8 +20,8 @@ export default function OrderPage() {
         email: orderData.data.userEmail,
       },
     });
-    console.log(orderData);
     setUserInfo(userData.data);
+
     for (const product of orderData.data.productId) {
       const productData = await axios.get("/api/products?id=" + product);
       setProductsInfo((prev) => [...prev, productData.data]);
@@ -33,24 +33,35 @@ export default function OrderPage() {
     }
     getAllDetails(id);
   }, [id]);
+
   return (
     <Layout>
-      <h1>Edit Product</h1>
+      <h1>Order Detail</h1>
       <div>
         <p>{orderInfo?.isRentOrder ? "Rent Order" : "Buy Order"}</p>
-
-        {userInfo?.address.map((address, index) => (
-          <div key={index}>
-            <p>{address.city}</p>
-            <p>{address.postalCode}</p>
-            <p>{address.streetAddress}</p>
-            <p>{address.state}</p>
-            <p>{address.country}</p>
+        <h2>Delivery Address -</h2>
+        {orderInfo?.deliveryAddress && (
+          <div>
+            <p>
+              {orderInfo.deliveryAddress.streetAddress},{" "}
+              {orderInfo.deliveryAddress.city},{" "}
+              {orderInfo.deliveryAddress.state}-
+              {orderInfo.deliveryAddress.postalCode},{" "}
+              {orderInfo.deliveryAddress.country}
+            </p>
           </div>
-        ))}
+        )}
 
         <p>{userInfo?.name}</p>
         <p>{userInfo?.phone}</p>
+        <hr />
+        <div>
+          {productsInfo?.map((product) => (
+            <p>
+              {product?.title} - ₹{product?.price}
+            </p>
+          ))}
+        </div>
       </div>
     </Layout>
   );
